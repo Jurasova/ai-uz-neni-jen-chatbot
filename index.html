@@ -1,0 +1,1282 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>AI už není jen chatbot | Praktický průvodce</title>
+<style>
+:root{
+  --bg:#FAFBFC; --paper:#FFFFFF; --navy:#14233B; --text:#1E2B42; --muted:#667085;
+  --line:#DCE3EA; --soft:#F3F6F8; --teal:#6FB7B0;
+  --p1:#D8A6AF; --p2:#E2B38F; --p3:#DCC47A; --p4:#9FC8A7; --p5:#9DBFE3; --p6:#B8A7DB;
+  --shadow:0 14px 38px rgba(20,35,59,.08); --radius:18px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Aptos,"Segoe UI",Arial,sans-serif;line-height:1.68;-webkit-font-smoothing:antialiased}
+a{color:#225b73;text-decoration-thickness:1px;text-underline-offset:3px}
+.progress{position:fixed;top:0;left:0;height:4px;background:var(--teal);width:0;z-index:100}
+.hero{position:relative;overflow:hidden;background:var(--navy);color:#fff;padding:72px 28px 58px}
+.hero:before{content:"";position:absolute;inset:auto -90px -110px auto;width:410px;height:410px;border-radius:50%;background:rgba(184,167,219,.16)}
+.hero:after{content:"";position:absolute;inset:-150px auto auto -120px;width:360px;height:360px;border-radius:50%;background:rgba(111,183,176,.11)}
+.hero-inner{position:relative;max-width:1120px;margin:auto;z-index:1}
+.eyebrow{font-size:.78rem;letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:#c8d5e4;margin-bottom:16px}
+.hero h1{font-family:Georgia,serif;font-size:clamp(2.55rem,5vw,4.8rem);line-height:1.02;margin:0 0 18px;max-width:900px;font-weight:600}
+.hero h1 span{display:block;color:#dce9f4}
+.hero .subtitle{font-size:clamp(1.08rem,2vw,1.35rem);max-width:780px;color:#e8eef5;margin:0 0 28px}
+.meta{display:flex;gap:10px;flex-wrap:wrap}
+.meta span{border:1px solid rgba(255,255,255,.19);background:rgba(255,255,255,.08);border-radius:999px;padding:7px 11px;font-size:.86rem;color:#f4f7fb}
+.rainbow{display:grid;grid-template-columns:repeat(6,1fr);height:7px}
+.rainbow i:nth-child(1){background:var(--p1)}.rainbow i:nth-child(2){background:var(--p2)}.rainbow i:nth-child(3){background:var(--p3)}.rainbow i:nth-child(4){background:var(--p4)}.rainbow i:nth-child(5){background:var(--p5)}.rainbow i:nth-child(6){background:var(--p6)}
+.layout{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:280px minmax(0,1fr);gap:42px;padding:42px 28px 80px}
+.sidebar{position:relative}
+.toc{position:sticky;top:26px;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:18px 14px;max-height:calc(100vh - 52px);overflow:auto;box-shadow:0 6px 22px rgba(20,35,59,.04)}
+.toc-head{display:flex;align-items:center;justify-content:space-between;padding:0 8px 9px;border-bottom:1px solid var(--line);margin-bottom:8px;font-weight:700;color:var(--navy)}
+.toc a{display:block;text-decoration:none;color:var(--muted);border-radius:9px;transition:.15s ease}
+.toc-main{padding:8px;font-size:.88rem;font-weight:650;margin-top:2px}
+.toc-sub{padding:5px 8px 5px 20px;font-size:.79rem}
+.toc a:hover,.toc a.active{background:var(--soft);color:var(--navy)}
+.mobile-toc{display:none;position:sticky;top:12px;z-index:80;margin:14px 18px 0}
+.mobile-toc button{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.94);backdrop-filter:blur(9px);border-radius:12px;padding:11px 14px;color:var(--navy);font-weight:700;box-shadow:0 5px 18px rgba(20,35,59,.08)}
+main{min-width:0}
+.intro-card{background:linear-gradient(145deg,#fff,#f7fafb);border:1px solid var(--line);border-radius:var(--radius);padding:26px 28px;margin-bottom:38px;box-shadow:var(--shadow)}
+.intro-card strong{color:var(--navy)}
+section{scroll-margin-top:26px}
+.chapter-kicker{display:inline-block;color:#587085;font-size:.68rem;letter-spacing:.12em;font-weight:800;margin-top:34px;margin-bottom:5px}
+h1,h2,h3,h4{color:var(--navy);font-family:Georgia,serif;line-height:1.23}
+main h1{font-size:clamp(1.9rem,3vw,2.55rem);margin:0 0 20px;padding-top:2px}
+main h2{font-size:1.48rem;margin:32px 0 12px}
+main h3{font-size:1.15rem;margin:25px 0 10px}
+main h4{font-size:1rem;margin:22px 0 8px}
+p{margin:0 0 15px}
+ul,ol{padding-left:1.35rem;margin:8px 0 18px}
+li{margin:5px 0}
+strong{color:#17263d}
+hr{border:0;border-top:1px solid var(--line);margin:36px 0}
+.callout{position:relative;margin:22px 0;background:#fff;border:1px solid var(--line);border-left:5px solid var(--teal);border-radius:14px;padding:18px 54px 18px 20px;box-shadow:0 5px 22px rgba(20,35,59,.04)}
+.callout p:last-child{margin-bottom:0}.callout strong{color:var(--navy)}
+.copy-btn{position:absolute;right:10px;top:10px;border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:5px 8px;font-size:.72rem;color:var(--muted);cursor:pointer}
+.copy-btn:hover{background:#e9eef2;color:var(--navy)}
+.copy-btn.copied{background:#e8f4ef;color:#2d684e;border-color:#bfdccf}
+table{border-collapse:separate;border-spacing:0;width:100%;margin:22px 0 28px;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 5px 20px rgba(20,35,59,.035)}
+th{background:var(--navy);color:white;text-align:left;padding:13px 14px;font-size:.86rem;letter-spacing:.02em}td{padding:13px 14px;border-top:1px solid var(--line);vertical-align:top;font-size:.93rem}
+.maturity-table tbody tr:nth-child(1) td:first-child{box-shadow:inset 6px 0 var(--p1)}
+.maturity-table tbody tr:nth-child(2) td:first-child{box-shadow:inset 6px 0 var(--p2)}
+.maturity-table tbody tr:nth-child(3) td:first-child{box-shadow:inset 6px 0 var(--p3)}
+.maturity-table tbody tr:nth-child(4) td:first-child{box-shadow:inset 6px 0 var(--p4)}
+.maturity-table tbody tr:nth-child(5) td:first-child{box-shadow:inset 6px 0 var(--p5)}
+.maturity-table tbody tr:nth-child(6) td:first-child{box-shadow:inset 6px 0 var(--p6)}
+.maturity-table td:first-child{font-weight:750;color:var(--navy);padding-left:18px;white-space:nowrap}
+main>div.section.level1{background:transparent;border-bottom:1px solid var(--line);padding-bottom:34px;margin-bottom:10px}
+main>div.section.level1:last-child{border-bottom:0}
+main>p:first-child, main>p:nth-child(2){font-size:1.02rem}
+.note-box{background:#f4f8fb;border:1px solid #dbe7ef;border-radius:14px;padding:18px 20px}
+.footer{max-width:1120px;margin:0 auto 42px;padding:0 28px;color:var(--muted);font-size:.84rem}
+.footer-box{border-top:1px solid var(--line);padding-top:20px;display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.backtop{position:fixed;right:22px;bottom:22px;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--navy);display:grid;place-items:center;box-shadow:var(--shadow);text-decoration:none;font-size:1.25rem;opacity:0;pointer-events:none;transition:.2s}
+.backtop.show{opacity:1;pointer-events:auto}
+.print-btn{border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.09);color:#fff;border-radius:999px;padding:8px 12px;font-weight:700;cursor:pointer}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr;padding:28px 18px 60px}.sidebar{display:none}.mobile-toc{display:block}.hero{padding:56px 20px 44px}.intro-card{padding:21px}
+  table{display:block;overflow-x:auto}.maturity-table td:first-child{white-space:normal;min-width:145px}
+}
+@media(max-width:560px){
+  .hero h1{font-size:2.35rem}.meta{gap:7px}.meta span{font-size:.78rem}.callout{padding-right:18px;padding-top:48px}.copy-btn{left:14px;right:auto}
+  main h1{font-size:1.8rem}main h2{font-size:1.34rem}td,th{font-size:.84rem;padding:11px}
+}
+@media print{
+  .progress,.sidebar,.mobile-toc,.backtop,.copy-btn,.print-btn{display:none!important}.hero{padding:34px 0 26px;background:#fff;color:var(--navy)}.hero h1,.hero .subtitle,.meta span{color:var(--navy)}.hero:before,.hero:after,.rainbow{display:none}.meta span{border-color:var(--line);background:#fff}.layout{display:block;padding:24px 0}.intro-card,.callout,table{box-shadow:none}.chapter-kicker{margin-top:20px}a{color:inherit;text-decoration:none}body{background:#fff;font-size:10.5pt}.footer{padding:0}.toc{display:none}
+  h1,h2,h3{break-after:avoid}table,blockquote{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<header class="hero" id="top">
+  <div class="hero-inner">
+    <div class="eyebrow">AI S ROZUMEM · PRŮVODCE PO SETKÁNÍ</div>
+    <h1>AI už není jen chatbot <span>Od otázky k nové práci s AI</span></h1>
+    <p class="subtitle">Praktický průvodce pro první vlastní experimenty. Vraťte se k principům ze setkání, vyberte si jeden skutečný úkol a zkuste ho s AI udělat jinak.</p>
+    <div class="meta">
+      <span>30. září 2026</span><span>1 h 35 min</span><span>pro začátečnice a mírně pokročilé</span>
+      <button class="print-btn" onclick="window.print()">Vytisknout / uložit jako PDF</button>
+    </div>
+  </div>
+</header>
+<div class="rainbow" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<div class="mobile-toc"><button type="button" id="tocToggle">Obsah průvodce</button></div>
+<div class="layout">
+  <aside class="sidebar"><nav class="toc" id="toc"><div class="toc-head"><span>Obsah</span><span>15 kapitol</span></div><a class="toc-sub" href="#jak-tento-materi-l-pou-vat">Jak tento materiál používat</a>
+<a class="toc-main" href="#1-rychl-shrnut-co-si-ze-setk-n-odn-st">1. Rychlé shrnutí: co si ze setkání odnést</a>
+<a class="toc-sub" href="#1-za-n-te-probl-mem-ne-n-strojem">1. Začněte problémem, ne nástrojem</a>
+<a class="toc-sub" href="#2-kontext-je-asto-d-le-it-j-ne-dokonal-prompt">2. Kontext je často důležitější než dokonalý prompt</a>
+<a class="toc-sub" href="#3-prvn-odpov-nen-konec">3. První odpověď není konec</a>
+<a class="toc-sub" href="#4-ai-m-e-b-t-sval-i-mozek">4. AI může být sval i mozek</a>
+<a class="toc-sub" href="#5-necht-jte-jen-odpov-cht-jte-pou-iteln-v-stup">5. Nechtějte jen odpověď. Chtějte použitelný výstup</a>
+<a class="toc-sub" href="#6-co-se-opakuje-ukl-dejte-jako-zp-sob-pr-ce">6. Co se opakuje, ukládejte jako způsob práce</a>
+<a class="toc-sub" href="#7-pam-nen-tot-co-chat">7. Paměť není totéž co chat</a>
+<a class="toc-sub" href="#8-nejde-jen-o-rychlost">8. Nejde jen o rychlost</a>
+<a class="toc-sub" href="#9-ne-v-echno-co-ai-m-e-ud-lat-j-m-te-p-edat">9. Ne všechno, co AI může udělat, jí máte předat</a>
+<a class="toc-sub" href="#10-nejlep-zp-sob-jak-se-u-it-je-zkou-et-na-vlastn-pr-ci">10. Nejlepší způsob, jak se učit, je zkoušet na vlastní práci</a>
+<a class="toc-main" href="#2-mapa-cel-pr-ce-od-odpov-di-k-delegaci">2. Mapa celé práce: od odpovědi k delegaci</a>
+<a class="toc-sub" href="#jeden-p-klad-nap-patry-pl-nov-n-cesty">Jeden příklad napříč patry: plánování cesty</a>
+<a class="toc-main" href="#3-kl-ov-principy-kter-se-vyplat-p-ev-st-do-vlastn-pr-ce">3. Klíčové principy, které se vyplatí převést do vlastní práce</a>
+<a class="toc-sub" href="#3-1-popi-te-c-l-ne-jen-p-kaz">3.1 Popište cíl, ne jen příkaz</a>
+<a class="toc-sub" href="#3-2-nechte-ai-aby-se-doptala">3.2 Nechte AI, aby se doptala</a>
+<a class="toc-sub" href="#3-3-d-vejte-zp-tnou-vazbu">3.3 Dávejte zpětnou vazbu</a>
+<a class="toc-sub" href="#3-4-kdy-se-n-co-povede-ulo-te-si-postup">3.4 Když se něco povede, uložte si postup</a>
+<a class="toc-sub" href="#3-5-kdy-se-n-co-nepovede-neopravujte-jen-v-stup">3.5 Když se něco nepovede, neopravujte jen výstup</a>
+<a class="toc-sub" href="#3-6-ai-m-e-pracovat-s-v-ce-typy-vstup">3.6 AI může pracovat s více typy vstupů</a>
+<a class="toc-sub" href="#3-7-organizace-informac-zvy-uje-hodnotu-ai">3.7 Organizace informací zvyšuje hodnotu AI</a>
+<a class="toc-sub" href="#3-8-nep-en-ejte-na-ai-pr-ci-na-kter-se-chcete-u-it">3.8 Nepřenášejte na AI práci, na které se chcete učit</a>
+<a class="toc-sub" href="#3-9-n-stroj-a-model-maj-vliv-ale-nejsou-to-jedin-co-rozhoduje">3.9 Nástroj a model mají vliv, ale nejsou to jediné, co rozhoduje</a>
+<a class="toc-sub" href="#3-10-ai-nen-automaticky-autorita">3.10 AI není automaticky autorita</a>
+<a class="toc-main" href="#4-konkr-tn-uk-zky-ze-setk-n-a-co-na-nich-bylo-d-le-it">4. Konkrétní ukázky ze setkání a co na nich bylo důležité</a>
+<a class="toc-sub" href="#4-1-program-konference-ern-ai-personalizace-d-ky-kontextu">4.1 Program konference Černá AI: personalizace díky kontextu</a>
+<a class="toc-sub" href="#4-2-vlastn-klikac-pr-vodce-z-materi-l-z-kurzu">4.2 Vlastní klikací průvodce z materiálů z kurzu</a>
+<a class="toc-sub" href="#4-3-ai-knowledge-radar-druh-mozek-jako-pracovn-pam">4.3 AI Knowledge Radar: druhý mozek jako pracovní paměť</a>
+<a class="toc-sub" href="#4-4-sb-ra-my-lenek-zachytit-te-organizovat-pozd-ji">4.4 Sběrač myšlenek: zachytit teď, organizovat později</a>
+<a class="toc-sub" href="#4-5-sch-zka-jako-workflow-ne-jen-p-epis">4.5 Schůzka jako workflow, ne jen přepis</a>
+<a class="toc-sub" href="#4-6-cestovn-p-kaz-kr-tk-zad-n-slo-it-postup">4.6 Cestovní příkaz: krátké zadání, složitý postup</a>
+<a class="toc-sub" href="#4-7-v-kaz-pr-ce-z-odeslan-ch-e-mail">4.7 Výkaz práce z odeslaných e-mailů</a>
+<a class="toc-sub" href="#4-8-automatizace-pr-ce-se-nemus-v-dy-spou-t-t-ru-n">4.8 Automatizace: práce se nemusí vždy spouštět ručně</a>
+<a class="toc-sub" href="#4-9-agentn-syst-m-pro-tvorbu-obsahu">4.9 Agentní systém pro tvorbu obsahu</a>
+<a class="toc-sub" href="#4-10-tato-prezentace-jako-p-klad-cel-ho-procesu">4.10 Tato prezentace jako příklad celého procesu</a>
+<a class="toc-main" href="#5-n-stroje-kter-b-hem-setk-n-zazn-ly">5. Nástroje, které během setkání zazněly</a>
+<a class="toc-sub" href="#chatgpt-nebo-jin-obecn-ai-chat">ChatGPT nebo jiný obecný AI chat</a>
+<a class="toc-sub" href="#microsoft-copilot">Microsoft Copilot</a>
+<a class="toc-sub" href="#notebooklm">NotebookLM</a>
+<a class="toc-sub" href="#notion-nebo-jin-znalostn-syst-m">Notion nebo jiný znalostní systém</a>
+<a class="toc-sub" href="#v-zkumn-a-vyhled-vac-n-stroje">Výzkumné a vyhledávací nástroje</a>
+<a class="toc-sub" href="#k-dovac-re-imy-a-n-stroje">Kódovací režimy a nástroje</a>
+<a class="toc-main" href="#6-bezpe-nost-kontrola-a-odpov-dnost">6. Bezpečnost, kontrola a odpovědnost</a>
+<a class="toc-sub" href="#t-i-ot-zky-m-e-sm-m">Tři otázky: MŮŽE, SMÍ, MÁ</a>
+<a class="toc-sub" href="#praktick-pravidla">Praktická pravidla</a>
+<a class="toc-sub" href="#ov-ov-n">Ověřování</a>
+<a class="toc-main" href="#7-co-m-ete-zkusit-podle-sv-situace">7. Co můžete zkusit podle své situace</a>
+<a class="toc-sub" href="#pokud-pracujete-v-administrativ-nebo-projektech">Pokud pracujete v administrativě nebo projektech</a>
+<a class="toc-sub" href="#pokud-pracujete-ve-st-tn-spr-v-nebo-s-legislativou">Pokud pracujete ve státní správě nebo s legislativou</a>
+<a class="toc-sub" href="#pokud-u-te-nebo-pracujete-ve-kolce-i-kole">Pokud učíte nebo pracujete ve školce či škole</a>
+<a class="toc-sub" href="#pokud-se-vrac-te-do-pr-ce-nebo-hled-te-novou-pr-ci">Pokud se vracíte do práce nebo hledáte novou práci</a>
+<a class="toc-sub" href="#pokud-chcete-za-t-v-osobn-m-ivot">Pokud chcete začít v osobním životě</a>
+<a class="toc-main" href="#8-sedmidenn-start-pro-za-te-n-ka">8. Sedmidenní start pro začátečníka</a>
+<a class="toc-sub" href="#den-1-jedna-skute-n-ot-zka">Den 1: Jedna skutečná otázka</a>
+<a class="toc-sub" href="#den-2-p-idejte-kontext">Den 2: Přidejte kontext</a>
+<a class="toc-sub" href="#den-3-nechte-ai-kl-st-ot-zky">Den 3: Nechte AI klást otázky</a>
+<a class="toc-sub" href="#den-4-cht-jte-artefakt">Den 4: Chtějte artefakt</a>
+<a class="toc-sub" href="#den-5-vra-te-ai-zp-tnou-vazbu">Den 5: Vraťte AI zpětnou vazbu</a>
+<a class="toc-sub" href="#den-6-ulo-te-poveden-postup">Den 6: Uložte povedený postup</a>
+<a class="toc-sub" href="#den-7-rozhodn-te-co-m-z-stat-na-v-s">Den 7: Rozhodněte, co má zůstat na vás</a>
+<a class="toc-main" href="#9-mal-sada-prompt-kter-m-ete-opravdu-pou-vat">9. Malá sada promptů, které můžete opravdu používat</a>
+<a class="toc-sub" href="#kdy-nev-te-jak-za-t">Když nevíte, jak začít</a>
+<a class="toc-sub" href="#kdy-je-odpov-p-li-obecn">Když je odpověď příliš obecná</a>
+<a class="toc-sub" href="#kdy-chcete-pracovat-jen-s-podklady">Když chcete pracovat jen s podklady</a>
+<a class="toc-sub" href="#kdy-chcete-kritickou-zp-tnou-vazbu">Když chcete kritickou zpětnou vazbu</a>
+<a class="toc-sub" href="#kdy-chcete-ulo-it-postup">Když chcete uložit postup</a>
+<a class="toc-sub" href="#kdy-chcete-zlep-it-syst-m-ne-jen-jeden-v-stup">Když chcete zlepšit systém, ne jen jeden výstup</a>
+<a class="toc-sub" href="#kdy-chcete-pou-vat-ai-jako-kou-e">Když chcete používat AI jako kouče</a>
+<a class="toc-main" href="#10-ot-zky-a-odpov-di-kter-zazn-ly-na-konci-setk-n">10. Otázky a odpovědi, které zazněly na konci setkání</a>
+<a class="toc-sub" href="#mus-m-si-hned-n-co-instalovat">Musím si hned něco instalovat?</a>
+<a class="toc-sub" href="#co-pou-t-na-dlouh-dokumenty-nebo-legislativu">Co použít na dlouhé dokumenty nebo legislativu?</a>
+<a class="toc-sub" href="#jak-nahr-t-offline-sch-zku">Jak nahrát offline schůzku?</a>
+<a class="toc-sub" href="#jak-vytvo-it-vlastn-skill-nebo-opakovateln-postup">Jak vytvořit vlastní skill nebo opakovatelný postup?</a>
+<a class="toc-sub" href="#jak-ai-ct-aby-nebyla-podb-ziv">Jak AI říct, aby nebyla podbízivá?</a>
+<a class="toc-sub" href="#jak-za-t-kdy-v-bec-nev-m-na-co-ai-pou-t">Jak začít, když vůbec nevím, na co AI použít?</a>
+<a class="toc-sub" href="#mus-ai-v-dy-et-it-as">Musí AI vždy šetřit čas?</a>
+<a class="toc-main" href="#11-slovn-ek-pro-za-te-n-ky">11. Slovníček pro začátečníky</a>
+<a class="toc-sub" href="#prompt">Prompt</a>
+<a class="toc-sub" href="#kontext">Kontext</a>
+<a class="toc-sub" href="#model">Model</a>
+<a class="toc-sub" href="#multimod-ln-vstup">Multimodální vstup</a>
+<a class="toc-sub" href="#artefakt-nebo-v-stup">Artefakt nebo výstup</a>
+<a class="toc-sub" href="#workflow">Workflow</a>
+<a class="toc-sub" href="#skill">Skill</a>
+<a class="toc-sub" href="#agent">Agent</a>
+<a class="toc-sub" href="#automatizace">Automatizace</a>
+<a class="toc-sub" href="#druh-mozek">Druhý mozek</a>
+<a class="toc-sub" href="#markdown">Markdown</a>
+<a class="toc-sub" href="#deep-research-nebo-hlub-re-er-e">Deep Research nebo hlubší rešerše</a>
+<a class="toc-sub" href="#halucinace">Halucinace</a>
+<a class="toc-main" href="#12-co-zat-m-nemus-te-e-it">12. Co zatím nemusíte řešit</a>
+<a class="toc-main" href="#13-jak-pokra-ovat-po-setk-n">13. Jak pokračovat po setkání</a>
+<a class="toc-sub" href="#nejd-le-it-j-ot-zka">Nejdůležitější otázka</a>
+<a class="toc-sub" href="#jeden-jednoduch-z-vazek">Jeden jednoduchý závazek</a>
+<a class="toc-main" href="#14-jak-pracovat-s-markdown-verz-tohoto-z-pisu-v-ai">14. Jak pracovat s Markdown verzí tohoto zápisu v AI</a>
+<a class="toc-sub" href="#najdi-moje-prvn-use-cases">Najdi moje první use cases</a>
+<a class="toc-sub" href="#navrhni-mi-jeden-experiment-na-20-minut">Navrhni mi jeden experiment na 20 minut</a>
+<a class="toc-sub" href="#pomoz-mi-vytvo-it-opakovateln-postup">Pomoz mi vytvořit opakovatelný postup</a>
+<a class="toc-sub" href="#vysv-tli-mi-n-co-znovu-jednodu-eji">Vysvětli mi něco znovu jednodušeji</a>
+<a class="toc-sub" href="#procvi-uj-m">Procvičuj mě</a>
+<a class="toc-sub" href="#zkontroluj-bezpe-nost-m-ho-use-case">Zkontroluj bezpečnost mého use case</a>
+<a class="toc-main" href="#15-jedna-v-ta-na-z-v-r">15. Jedna věta na závěr</a></nav></aside>
+  <main id="content">
+    <div class="intro-card">
+      <strong>Jak průvodce používat:</strong> nemusíte číst všechno najednou. Začněte rychlým shrnutím a mapou „Od odpovědi k delegaci“. Pak si vyberte jeden konkrétní úkol, který právě řešíte, a použijte připravený prompt nebo postup.
+    </div>
+<p><strong>Online setkání: 30. září 2026</strong><br/>
+<strong>Délka záznamu: 1 h 35 min</strong></p>
+<p>Tento materiál není doslovný přepis. Je to přehledně zpracovaný zápis, který zachycuje hlavní myšlenky, principy, příklady a otázky ze setkání. Je napsaný tak, aby se k němu mohl vrátit i člověk, který s AI teprve začíná.</p>
+<p><strong>Jak číst původ obsahu:</strong> části popisující průběh, příklady a principy vycházejí z přepisu setkání. Startovací prompty, sedmidenní plán a některá praktická bezpečnostní doporučení jsou redakční pomůcky vytvořené pro snazší použití po setkání, nikoli doslovné výroky z přepisu.</p>
+<p>Hlavní myšlenka celého setkání je jednoduchá:</p>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p><strong>AI už není jen místo, kam napíšu otázku a dostanu odpověď. Může být partnerem pro přemýšlení, pracovat s mými podklady, vytvářet konkrétní výstupy, pomáhat stavět opakovatelné pracovní postupy a u některých úkolů převzít část práce.</strong></p>
+</blockquote>
+<p>Zároveň ale platí:</p>
+<blockquote class="callout">
+<p><strong>Člověk drží cíl, úsudek, kontrolu a odpovědnost.</strong></p>
+</blockquote>
+<section class="level2" id="jak-tento-materiál-používat">
+<h2 id="jak-tento-materi-l-pou-vat">Jak tento materiál používat</h2>
+<p>Nemusíte číst všechno najednou. Doporučený postup:</p>
+<ol type="1">
+<li>Nejdřív si projděte kapitolu <strong>Rychlé shrnutí</strong> a mapu <strong>Od odpovědi k delegaci</strong>.</li>
+<li>Vyberte si jeden konkrétní úkol, který právě řešíte v práci nebo doma.</li>
+<li>Použijte některý z připravených startovacích promptů.</li>
+<li>Pokud máte tento dokument i v Markdownu, nahrajte ho do AI a nechte si principy vztáhnout přímo na svou situaci.</li>
+</ol>
+<hr/>
+</section>
+<section class="level1" id="1-rychlé-shrnutí-co-si-ze-setkání-odnést">
+<span class="chapter-kicker">KAPITOLA</span><h1 id="1-rychl-shrnut-co-si-ze-setk-n-odn-st">1. Rychlé shrnutí: co si ze setkání odnést</h1>
+<p>Pokud máte jen několik minut, stačí si zapamatovat těchto deset bodů.</p>
+<section class="level2" id="1-začněte-problémem-ne-nástrojem">
+<h2 id="1-za-n-te-probl-mem-ne-n-strojem">1. Začněte problémem, ne nástrojem</h2>
+<p>Neřešte jako první, jestli potřebujete ChatGPT, Copilot, NotebookLM nebo jinou aplikaci. Nejdřív si pojmenujte:</p>
+<ul>
+<li>Co právě řeším?</li>
+<li>Čeho chci dosáhnout?</li>
+<li>Co už mám za podklady?</li>
+<li>Jaká omezení musím respektovat?</li>
+<li>Jak má vypadat dobrý výsledek?</li>
+</ul>
+<p>Nástroj vybírejte až potom.</p>
+</section>
+<section class="level2" id="2-kontext-je-často-důležitější-než-dokonalý-prompt">
+<h2 id="2-kontext-je-asto-d-le-it-j-ne-dokonal-prompt">2. Kontext je často důležitější než dokonalý prompt</h2>
+<p>AI neví automaticky, kdo jste, co řešíte a co je pro vás důležité. Čím lepší kontext dostane, tím méně obecnou odpověď vrátí.</p>
+<p>Kontext může být:</p>
+<ul>
+<li>popis vaší situace,</li>
+<li>cíl,</li>
+<li>omezení,</li>
+<li>PDF,</li>
+<li>tabulka,</li>
+<li>screenshot,</li>
+<li>přepis schůzky,</li>
+<li>e-mail,</li>
+<li>webová stránka,</li>
+<li>vaše předchozí rozhodnutí,</li>
+<li>dokument, ve kterém je popsaný váš způsob práce.</li>
+</ul>
+</section>
+<section class="level2" id="3-první-odpověď-není-konec">
+<h2 id="3-prvn-odpov-nen-konec">3. První odpověď není konec</h2>
+<p>Dobrá práce s AI je dialog. Výstup můžete opravit, zpřesnit, zkritizovat nebo změnit.</p>
+<p>Můžete říct například:</p>
+<ul>
+<li>„Tohle je moc obecné. Co ode mě potřebuješ vědět, aby byl návrh konkrétní?“</li>
+<li>„Tahle část mi nedává smysl. Navrhni jinou cestu.“</li>
+<li>„Doptej se mě na chybějící informace.“</li>
+<li>„Najdi slabá místa svého návrhu.“</li>
+<li>„Nic si nevymýšlej. Co nevíš, označ jako chybějící údaj.“</li>
+</ul>
+</section>
+<section class="level2" id="4-ai-může-být-sval-i-mozek">
+<h2 id="4-ai-m-e-b-t-sval-i-mozek">4. AI může být sval i mozek</h2>
+<p><strong>AI jako sval:</strong> dostane přesný postup a vykoná ho.<br/>
+Příklad: „Z tohoto přepisu udělej zápis podle této struktury.“</p>
+<p><strong>AI jako mozek:</strong> dostane situaci, cíl, podklady a omezení a pomůže navrhnout cestu.<br/>
+Příklad: „Potřebuji dostat tým z úrovně základního chatu k samostatné práci s AI. Tady jsou naše podmínky. Navrhni postup a nejdřív se mě doptej na vše, co potřebuješ vědět.“</p>
+<p>Oba způsoby jsou užitečné. Rozhoduje účel.</p>
+</section>
+<section class="level2" id="5-nechtějte-jen-odpověď-chtějte-použitelný-výstup">
+<h2 id="5-necht-jte-jen-odpov-cht-jte-pou-iteln-v-stup">5. Nechtějte jen odpověď. Chtějte použitelný výstup</h2>
+<p>AI může vytvořit například:</p>
+<ul>
+<li>tabulku,</li>
+<li>checklist,</li>
+<li>zápis,</li>
+<li>harmonogram,</li>
+<li>prezentaci,</li>
+<li>pracovní list,</li>
+<li>sadu otázek,</li>
+<li>databázovou strukturu,</li>
+<li>HTML stránku,</li>
+<li>jednoduchý dashboard,</li>
+<li>návrh malé aplikace.</li>
+</ul>
+<p>To je důležitý posun od „poraď mi“ k „pomoz mi něco skutečně vytvořit“.</p>
+</section>
+<section class="level2" id="6-co-se-opakuje-ukládejte-jako-způsob-práce">
+<h2 id="6-co-se-opakuje-ukl-dejte-jako-zp-sob-pr-ce">6. Co se opakuje, ukládejte jako způsob práce</h2>
+<p>Pokud AI pořád vysvětlujete totéž, je to signál, že už nejde jen o jednorázový prompt.</p>
+<p>Zeptejte se:</p>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Tento úkol dělám opakovaně. Analyzuj, jak jsme postupovali, a navrhni z toho opakovatelný postup. Co musí být vždy vstup, jaké kontroly mají proběhnout a jak má vypadat výstup?“</p>
+</blockquote>
+<p>Tak může vzniknout šablona, workflow, skill nebo asistent.</p>
+</section>
+<section class="level2" id="7-paměť-není-totéž-co-chat">
+<h2 id="7-pam-nen-tot-co-chat">7. Paměť není totéž co chat</h2>
+<p>Nespoléhejte na to, že AI bude za týdny nebo měsíce přesně znát všechno, co jste spolu řešili.</p>
+<p>Důležité věci ukládejte do vlastních souborů nebo znalostního systému. AI si je pak může znovu načíst.</p>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p><strong>AI si nemusí všechno pamatovat. Potřebuje vědět, kde si to znovu přečíst.</strong></p>
+</blockquote>
+</section>
+<section class="level2" id="8-nejde-jen-o-rychlost">
+<h2 id="8-nejde-jen-o-rychlost">8. Nejde jen o rychlost</h2>
+<p>U rutinní administrativy může AI práci výrazně zrychlit. U složitější práce ale nemusí být cílem úspora času.</p>
+<p>Někdy s AI strávíte více času, protože:</p>
+<ul>
+<li>porovnáváte varianty,</li>
+<li>zpřesňujete vlastní myšlenky,</li>
+<li>necháváte si oponovat,</li>
+<li>hledáte kvalitnější řešení,</li>
+<li>učíte se.</li>
+</ul>
+<p>Výsledkem pak není jen rychlejší práce, ale lepší práce.</p>
+</section>
+<section class="level2" id="9-ne-všechno-co-ai-může-udělat-jí-máte-předat">
+<h2 id="9-ne-v-echno-co-ai-m-e-ud-lat-j-m-te-p-edat">9. Ne všechno, co AI může udělat, jí máte předat</h2>
+<p>Ptejte se třemi otázkami:</p>
+<section class="level3" id="může">
+<h3>MŮŽE?</h3>
+<p>Zvládne to AI technicky?</p>
+</section>
+<section class="level3" id="smí">
+<h3>SMÍ?</h3>
+<p>Mohu jí dát tato data, přístup nebo pravomoc?</p>
+</section>
+<section class="level3" id="má">
+<h3>MÁ?</h3>
+<p>Je pro můj cíl správné, aby tuto část práce dělala právě AI?</p>
+</section>
+</section>
+<section class="level2" id="10-nejlepší-způsob-jak-se-učit-je-zkoušet-na-vlastní-práci">
+<h2 id="10-nejlep-zp-sob-jak-se-u-it-je-zkou-et-na-vlastn-pr-ci">10. Nejlepší způsob, jak se učit, je zkoušet na vlastní práci</h2>
+<p>Není potřeba zvládnout všechno najednou. Vezměte jeden skutečný úkol a zkuste ho s AI udělat jinak.</p>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p><strong>Nehledejte cizí use case. Hledejte svůj opakující se problém.</strong></p>
+</blockquote>
+<hr/>
+</section>
+</section>
+<section class="level1" id="2-mapa-celé-práce-od-odpovědi-k-delegaci">
+<span class="chapter-kicker">KAPITOLA</span><h1 id="2-mapa-cel-pr-ce-od-odpov-di-k-delegaci">2. Mapa celé práce: od odpovědi k delegaci</h1>
+<p>Během setkání byla práce s AI popsána jako šest navazujících pater. Nejde o žebříček, ve kterém musíte být co nejvýš. Každé patro se hodí pro jiný typ situace.</p>
+<table class="maturity-table">
+<thead>
+<tr class="header">
+<th>Patro</th>
+<th>Co se děje</th>
+<th>Typické příklady</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>1. PTÁM SE</strong></td>
+<td>AI odpovídá</td>
+<td>brainstorming, vysvětlení, překlad, shrnutí, návrhy</td>
+</tr>
+<tr class="even">
+<td><strong>2. DÁVÁM KONTEXT</strong></td>
+<td>AI pracuje s mojí situací a podklady</td>
+<td>PDF, tabulka, screenshot, přepis, e-mail, web, vlastní preference</td>
+</tr>
+<tr class="odd">
+<td><strong>3. ZADÁVÁM PROBLÉM</strong></td>
+<td>Popíšu cíl, situaci a omezení, AI navrhne cestu</td>
+<td>strategie, rešerše, příprava projektu, hledání variant řešení</td>
+</tr>
+<tr class="even">
+<td><strong>4. VYTVÁŘÍM VÝSTUP</strong></td>
+<td>Nechci jen radu, ale použitelný artefakt</td>
+<td>tabulka, checklist, prezentace, zápis, mapa, dashboard, mini aplikace</td>
+</tr>
+<tr class="odd">
+<td><strong>5. STAVÍM SYSTÉM</strong></td>
+<td>Opakovaný postup už nemusím vysvětlovat od nuly</td>
+<td>workflow, skill, asistent, druhý mozek, šablona postupu</td>
+</tr>
+<tr class="even">
+<td><strong>6. DELEGUJI</strong></td>
+<td>Práce se spustí podle času nebo události, případně proběhne ve více krocích</td>
+<td>monitoring, pravidelný přehled, automatické zpracování, agentní workflow</td>
+</tr>
+</tbody>
+</table>
+<p>Napříč všemi patry zůstává role člověka stejná:</p>
+<p><strong>cíl + úsudek + kontrola + odpovědnost</strong></p>
+<section class="level2" id="jeden-příklad-napříč-patry-plánování-cesty">
+<h2 id="jeden-p-klad-nap-patry-pl-nov-n-cesty">Jeden příklad napříč patry: plánování cesty</h2>
+<p>Ve setkání zazněl příklad rodinné cesty do Slovinska.</p>
+<section class="level3" id="patro-1-ptám-se">
+<h3>Patro 1: Ptám se</h3>
+<p>„Jedeme do Slovinska. Navrhni výlety.“</p>
+<p>Výsledek bude pravděpodobně obecný seznam.</p>
+</section>
+<section class="level3" id="patro-2-dávám-kontext">
+<h3>Patro 2: Dávám kontext</h3>
+<p>„Máme rádi hory, pojedeme s dětmi přibližně ve věku 5 a 10 let, mladší zvládne omezenou vzdálenost a starší potřebuje na trase něco zajímavého.“</p>
+<p>Výsledek už může být výrazně osobnější.</p>
+</section>
+<section class="level3" id="patro-3-zadávám-problém">
+<h3>Patro 3: Zadávám problém</h3>
+<p>„Potřebuji najít oblast, kde bude více vhodných tras blízko sebe, aby mladší dítě trasu zvládlo a starší se nenudilo. Tady jsou čtyři weby s tipy. Navrhni, jak z nich vybrat nejlepší oblast.“</p>
+</section>
+<section class="level3" id="patro-4-vytvářím-výstup">
+<h3>Patro 4: Vytvářím výstup</h3>
+<p>AI může z podkladů připravit tabulku tras, délku, převýšení, vhodnost pro děti a mapu bodů.</p>
+</section>
+<section class="level3" id="patro-5-stavím-systém">
+<h3>Patro 5: Stavím systém</h3>
+<p>Můžete si postupně vytvořit vlastní databázi cest, ubytování, preferencí a zkušeností, aby AI příště věděla, co je pro vaši rodinu důležité.</p>
+</section>
+<section class="level3" id="patro-6-deleguji">
+<h3>Patro 6: Deleguji</h3>
+<p>Některé části práce se mohou spouštět opakovaně, například sledování vybrané informace před cestou.</p>
+<p>Pointa není dovolená. Pointa je způsob práce:</p>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p><strong>Stejný úkol se může posunout od jednoduché otázky až k systému, který zná vaše preference a část práce dělá opakovaně.</strong></p>
+</blockquote>
+<hr/>
+</section>
+</section>
+</section>
+<section class="level1" id="3-klíčové-principy-které-se-vyplatí-převést-do-vlastní-práce">
+<span class="chapter-kicker">KAPITOLA</span><h1 id="3-kl-ov-principy-kter-se-vyplat-p-ev-st-do-vlastn-pr-ce">3. Klíčové principy, které se vyplatí převést do vlastní práce</h1>
+<section class="level2" id="31-popište-cíl-ne-jen-příkaz">
+<h2 id="3-1-popi-te-c-l-ne-jen-p-kaz">3.1 Popište cíl, ne jen příkaz</h2>
+<p>Místo:</p>
+<blockquote class="callout">
+<p>„Napiš mi e-mail.“</p>
+</blockquote>
+<p>zkuste:</p>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Potřebuji od kolegů do pátku získat podklady pro závěrečnou zprávu. Už jsem je jednou urgovala. Chci být jasná, ale ne konfliktní. Připrav návrh e-mailu. Pokud ti chybí důležitý kontext, nejdřív se doptáš.“</p>
+</blockquote>
+<p>Rozdíl není v délce promptu. Rozdíl je v tom, že AI rozumí cíli.</p>
+</section>
+<section class="level2" id="32-nechte-ai-aby-se-doptala">
+<h2 id="3-2-nechte-ai-aby-se-doptala">3.2 Nechte AI, aby se doptala</h2>
+<p>Nemusíte vždy dopředu vědět, co všechno je potřeba uvést.</p>
+<p>Velmi užitečná věta je:</p>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p><strong>„Doptej se mě na všechno, co potřebuješ vědět, abys ten úkol mohl udělat kvalitně.“</strong></p>
+</blockquote>
+<p>To je vhodné zejména u:</p>
+<ul>
+<li>strategie,</li>
+<li>projektového záměru,</li>
+<li>přípravy workshopu,</li>
+<li>změny pracovního procesu,</li>
+<li>důležitého textu,</li>
+<li>analýzy problému.</li>
+</ul>
+</section>
+<section class="level2" id="33-dávejte-zpětnou-vazbu">
+<h2 id="3-3-d-vejte-zp-tnou-vazbu">3.3 Dávejte zpětnou vazbu</h2>
+<p>AI se nedozví, že je výsledek špatně, pokud jí to neřeknete.</p>
+<p>Příklady:</p>
+<ul>
+<li>„Tohle je příliš obecné.“</li>
+<li>„Tato varianta je lepší. Vysvětli proč a použij stejný princip dál.“</li>
+<li>„Nechci marketingový tón. Piš věcněji.“</li>
+<li>„Chybí mi rizika a slabá místa.“</li>
+<li>„Tento krok je v našem procesu nereálný. Navrhni alternativu.“</li>
+</ul>
+</section>
+<section class="level2" id="34-když-se-něco-povede-uložte-si-postup">
+<h2 id="3-4-kdy-se-n-co-povede-ulo-te-si-postup">3.4 Když se něco povede, uložte si postup</h2>
+<p>Dobrá odpověď je užitečná jednou. Dobrý postup je užitečný opakovaně.</p>
+<p>Po dobře vyřešeném úkolu můžete říct:</p>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Zrekapituluj, jak jsme postupovali. Odděl vstupy, rozhodovací pravidla, kontrolní body a formát výstupu. Přepiš to jako opakovatelnou instrukci pro příště.“</p>
+</blockquote>
+</section>
+<section class="level2" id="35-když-se-něco-nepovede-neopravujte-jen-výstup">
+<h2 id="3-5-kdy-se-n-co-nepovede-neopravujte-jen-v-stup">3.5 Když se něco nepovede, neopravujte jen výstup</h2>
+<p>U opakované práce se ptejte:</p>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Co máme změnit v postupu, aby tato chyba příště vůbec nevznikla?“</p>
+</blockquote>
+<p>Tím se z jednorázové opravy stává zlepšení systému.</p>
+</section>
+<section class="level2" id="36-ai-může-pracovat-s-více-typy-vstupů">
+<h2 id="3-6-ai-m-e-pracovat-s-v-ce-typy-vstup">3.6 AI může pracovat s více typy vstupů</h2>
+<p>Ve setkání zazněly například:</p>
+<ul>
+<li>dokumenty,</li>
+<li>PDF,</li>
+<li>tabulky,</li>
+<li>obrázky,</li>
+<li>screenshoty,</li>
+<li>webové stránky,</li>
+<li>přepisy schůzek,</li>
+<li>e-maily,</li>
+<li>videa nebo jejich přepisy,</li>
+<li>vlastní poznámky.</li>
+</ul>
+<p>Praktický návyk: když něco složitě popisujete, zeptejte se, zda není jednodušší přiložit přímo zdroj.</p>
+</section>
+<section class="level2" id="37-organizace-informací-zvyšuje-hodnotu-ai">
+<h2 id="3-7-organizace-informac-zvy-uje-hodnotu-ai">3.7 Organizace informací zvyšuje hodnotu AI</h2>
+<p>Čím víc s AI pracujete, tím více podkladů, poznámek a výstupů vzniká. Bez systému se mohou začít hromadit.</p>
+<p>Proto má smysl:</p>
+<ul>
+<li>rozhodnout, co stojí za uložení,</li>
+<li>mít jednoduché názvy a strukturu,</li>
+<li>oddělovat zdroje, vlastní poznámky a finální výstupy,</li>
+<li>průběžně mazat nebo neukládat to, co už hodnotu nemá.</li>
+</ul>
+<p>AI může s organizací pomoci, ale člověk musí rozhodovat, co je důležité.</p>
+</section>
+<section class="level2" id="38-nepřenášejte-na-ai-práci-na-které-se-chcete-učit">
+<h2 id="3-8-nep-en-ejte-na-ai-pr-ci-na-kter-se-chcete-u-it">3.8 Nepřenášejte na AI práci, na které se chcete učit</h2>
+<p>Ve setkání zazněl příklad AI kouče na psaní.</p>
+<p>Pokud je cílem <strong>hotový text</strong>, AI může převzít větší část práce.</p>
+<p>Pokud je cílem <strong>naučit se psát lépe</strong>, AI by neměla text vždy napsat místo vás. Může:</p>
+<ul>
+<li>klást otázky,</li>
+<li>pomoci se strukturou,</li>
+<li>upozornit na slabá místa,</li>
+<li>dát zpětnou vazbu,</li>
+<li>nechat vás vytvořit vlastní verzi.</li>
+</ul>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p><strong>Stejná AI. Stejný úkol. Jiný cíl znamená jinou roli AI.</strong></p>
+</blockquote>
+</section>
+<section class="level2" id="39-nástroj-a-model-mají-vliv-ale-nejsou-to-jediné-co-rozhoduje">
+<h2 id="3-9-n-stroj-a-model-maj-vliv-ale-nejsou-to-jedin-co-rozhoduje">3.9 Nástroj a model mají vliv, ale nejsou to jediné, co rozhoduje</h2>
+<p>Ve setkání se řešilo, že různé modely a nástroje se hodí na různé typy práce.</p>
+<p>Pro začátek stačí jednoduché pravidlo:</p>
+<ul>
+<li>běžná otázka nebo rychlá rutina: stačí jednoduchý chat,</li>
+<li>složitější analýza: použijte schopnější režim nebo model, pokud ho máte,</li>
+<li>práce s firemními daty: preferujte nástroj a účet schválený organizací,</li>
+<li>práce nad konkrétní sadou zdrojů: hodí se prostředí, které umí zdroje držet pohromadě,</li>
+<li>tvorba aplikace nebo interaktivního výstupu: může dávat smysl kódovací režim.</li>
+</ul>
+<p>Konkrétní názvy modelů, tarify a funkce se rychle mění. Důležitější je rozumět typu úkolu.</p>
+</section>
+<section class="level2" id="310-ai-není-automaticky-autorita">
+<h2 id="3-10-ai-nen-automaticky-autorita">3.10 AI není automaticky autorita</h2>
+<p>To, že odpověď zní jistě, neznamená, že je správně.</p>
+<p>U důležitých úkolů:</p>
+<ul>
+<li>kontrolujte zdroje,</li>
+<li>ověřujte čísla a fakta,</li>
+<li>nechte AI označit nejistoty,</li>
+<li>chtějte odkazy na konkrétní pasáže v podkladech,</li>
+<li>u citlivých rozhodnutí zachovejte lidskou kontrolu.</li>
+</ul>
+<hr/>
+</section>
+</section>
+<section class="level1" id="4-konkrétní-ukázky-ze-setkání-a-co-na-nich-bylo-důležité">
+<span class="chapter-kicker">KAPITOLA</span><h1 id="4-konkr-tn-uk-zky-ze-setk-n-a-co-na-nich-bylo-d-le-it">4. Konkrétní ukázky ze setkání a co na nich bylo důležité</h1>
+<section class="level2" id="41-program-konference-černá-ai-personalizace-díky-kontextu">
+<h2 id="4-1-program-konference-ern-ai-personalizace-d-ky-kontextu">4.1 Program konference Černá AI: personalizace díky kontextu</h2>
+<p>Byl ukázán skutečný prompt ve smyslu:</p>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Znáš mě a moji strategii. Podívej se na program Černé AI, analyzuj přednášky a doporuč mi, co bych neměla minout a co bude pro mě zajímavé.“</p>
+</blockquote>
+<p>Prompt nebyl složitý. Hodnota vznikla z toho, že AI měla k dispozici kontext o tom, na čem uživatelka pracuje, co ji zajímá a kam profesně směřuje.</p>
+<p><strong>Princip:</strong> personalizace nevzniká jen lepší formulací promptu. Vzniká hlavně lepším kontextem.</p>
+</section>
+<section class="level2" id="42-vlastní-klikací-průvodce-z-materiálů-z-kurzu">
+<h2 id="4-2-vlastn-klikac-pr-vodce-z-materi-l-z-kurzu">4.2 Vlastní klikací průvodce z materiálů z kurzu</h2>
+<p>Po kurzu vzniklo mnoho dokumentů, pojmů a rolí. Místo dalšího seznamu poznámek vznikla jednoduchá aplikace, která informace strukturovala a umožnila se v nich orientovat.</p>
+<p><strong>Princip:</strong> když máte hodně informací, nemusíte potřebovat další shrnutí. Možná potřebujete mapu, strukturu nebo rozhodovací pomůcku.</p>
+</section>
+<section class="level2" id="43-ai-knowledge-radar-druhý-mozek-jako-pracovní-paměť">
+<h2 id="4-3-ai-knowledge-radar-druh-mozek-jako-pracovn-pam">4.3 AI Knowledge Radar: druhý mozek jako pracovní paměť</h2>
+<p>Byl ukázán systém, který pomáhá:</p>
+<ul>
+<li>zachycovat nové zdroje,</li>
+<li>rozhodovat, co je relevantní,</li>
+<li>propojit nové informace s tím, co už je uložené,</li>
+<li>vracet se k nim později podle záměru.</li>
+</ul>
+<p>Důležitá myšlenka:</p>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p><strong>Druhý mozek nemá být sklad. Má pomoci najít správnou věc ve správnou chvíli.</strong></p>
+</blockquote>
+<p>Když přijde nový newsletter, článek nebo přepis, nemusí se ukládat všechno. AI může pomoci rozlišit:</p>
+<ul>
+<li>co je nové,</li>
+<li>co už v systému je,</li>
+<li>co stojí za doplnění,</li>
+<li>co vyzkoušet,</li>
+<li>co nemá cenu ukládat.</li>
+</ul>
+</section>
+<section class="level2" id="44-sběrač-myšlenek-zachytit-teď-organizovat-později">
+<h2 id="4-4-sb-ra-my-lenek-zachytit-te-organizovat-pozd-ji">4.4 Sběrač myšlenek: zachytit teď, organizovat později</h2>
+<p>Byl ukázán jednoduchý způsob, jak si hlasem nebo textem zachytit nápad v okamžiku, kdy vznikne.</p>
+<p>Princip je důležitější než konkrétní nástroj:</p>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p><strong>Při zachycení myšlenky nemusím řešit, kam přesně patří. Nejdřív ji nechci ztratit. Organizace může přijít později.</strong></p>
+</blockquote>
+<p>AI může po uložení zkusit najít souvislost s tím, co už máte.</p>
+</section>
+<section class="level2" id="45-schůzka-jako-workflow-ne-jen-přepis">
+<h2 id="4-5-sch-zka-jako-workflow-ne-jen-p-epis">4.5 Schůzka jako workflow, ne jen přepis</h2>
+<p>AI nemusí vstoupit až na konci slovy „udělej mi zápis“.</p>
+<p>Byl popsán celý řetězec:</p>
+<ol type="1">
+<li>najít vhodný termín,</li>
+<li>připravit podklady a scénář,</li>
+<li>uskutečnit schůzku,</li>
+<li>zpracovat přepis,</li>
+<li>vytvořit zápis, závěry a úkoly,</li>
+<li>připravit výstup pro lidi,</li>
+<li>připravit textový výstup pro další práci s AI.</li>
+</ol>
+<p><strong>Princip:</strong> neoptimalizujte jen jeden prompt. Podívejte se na celý pracovní proces.</p>
+<section class="level3" id="poznámka-k-přepisu-offline-schůzek">
+<h3>Poznámka k přepisu offline schůzek</h3>
+<p>U čistě offline schůzky je potřeba kvalitní záznam zvuku, například diktafon nebo mikrofon. U hybridních schůzek může být problém, pokud online systém dobře slyší pouze vzdálené účastníky a ne lidi v místnosti.</p>
+</section>
+</section>
+<section class="level2" id="46-cestovní-příkaz-krátké-zadání-složitý-postup">
+<h2 id="4-6-cestovn-p-kaz-kr-tk-zad-n-slo-it-postup">4.6 Cestovní příkaz: krátké zadání, složitý postup</h2>
+<p>Byl ukázán opakovaný administrativní úkol. Místo znovuvysvětlování celého procesu vznikl uložený postup, který věděl:</p>
+<ul>
+<li>jaké podklady hledat,</li>
+<li>které údaje vytáhnout,</li>
+<li>jak je strukturovat,</li>
+<li>co kontrolovat,</li>
+<li>kdy se zastavit a požádat o doplnění.</li>
+</ul>
+<p>Výsledné zadání pak může být velmi krátké.</p>
+<p><strong>Princip:</strong> krátké zadání neznamená jednoduchý proces. Proces už může být uložený.</p>
+<p>Ještě důležitější je druhý princip:</p>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p><strong>Dobrý postup neříká AI jen, co má dělat. Říká jí také, kdy nemá hádat.</strong></p>
+</blockquote>
+</section>
+<section class="level2" id="47-výkaz-práce-z-odeslaných-e-mailů">
+<h2 id="4-7-v-kaz-pr-ce-z-odeslan-ch-e-mail">4.7 Výkaz práce z odeslaných e-mailů</h2>
+<p>Další příklad ukazoval, že pokud je pracovní činnost zčásti zachycená v e-mailu, může AI pomoci sestavit přehled činností podle předem domluvených kategorií.</p>
+<p><strong>Princip:</strong> hledejte data, která už vznikají při práci. Nemusíte vždy vytvářet nový administrativní krok jen proto, abyste něco vykázali.</p>
+</section>
+<section class="level2" id="48-automatizace-práce-se-nemusí-vždy-spouštět-ručně">
+<h2 id="4-8-automatizace-pr-ce-se-nemus-v-dy-spou-t-t-ru-n">4.8 Automatizace: práce se nemusí vždy spouštět ručně</h2>
+<p>Ve setkání zazněl příklad pravidelného sledování tématu a přípravy shrnutí.</p>
+<p>Rozdíl:</p>
+<ul>
+<li><strong>skill nebo uložený postup:</strong> člověk úkol spustí,</li>
+<li><strong>automatizace:</strong> úkol spustí čas nebo událost.</li>
+</ul>
+<p>Příklad: jednou týdně projít nové zdroje k tématu a připravit přehled toho, co stojí za pozornost.</p>
+</section>
+<section class="level2" id="49-agentní-systém-pro-tvorbu-obsahu">
+<h2 id="4-9-agentn-syst-m-pro-tvorbu-obsahu">4.9 Agentní systém pro tvorbu obsahu</h2>
+<p>Byl ukázán systém, ve kterém různé specializované role postupně:</p>
+<ul>
+<li>sbírají zdroje,</li>
+<li>čistí a třídí informace,</li>
+<li>hledají scénáře použití,</li>
+<li>tvoří obsah,</li>
+<li>vytahují prompty,</li>
+<li>kontrolují kvalitu,</li>
+<li>implementují výstup,</li>
+<li>provádějí další kontrolu,</li>
+<li>zlepšují pravidla pro příště.</li>
+</ul>
+<p>Nešlo o doporučení, že začátečník má zítra stavět multiagentní systém.</p>
+<p>Šlo o ukázku, kam se práce může posunout:</p>
+<blockquote class="callout">
+<p><strong>O patro výš už AI neodpovídá. Dostává práci.</strong></p>
+</blockquote>
+</section>
+<section class="level2" id="410-tato-prezentace-jako-příklad-celého-procesu">
+<h2 id="4-10-tato-prezentace-jako-p-klad-cel-ho-procesu">4.10 Tato prezentace jako příklad celého procesu</h2>
+<p>Na konci bylo ukázáno, že samotná prezentace nevznikla příkazem „udělej prezentaci o AI“.</p>
+<p>Proces zahrnoval:</p>
+<ul>
+<li>pojmenování cílové skupiny,</li>
+<li>definici cíle setkání,</li>
+<li>práci s předchozími materiály a znalostním systémem,</li>
+<li>návrh architektury prezentace,</li>
+<li>výběr skutečných use cases,</li>
+<li>přípravu screenshotů,</li>
+<li>oddělené ladění obsahu a designu,</li>
+<li>několik iterací,</li>
+<li>vytvoření finálního PowerPointu pomocí kódu,</li>
+<li>lidskou kontrolu a úpravy.</li>
+</ul>
+<p><strong>Princip:</strong> pokročilá práce s AI není jeden geniální prompt. Je to navržený proces.</p>
+<hr/>
+</section>
+</section>
+<section class="level1" id="5-nástroje-které-během-setkání-zazněly">
+<span class="chapter-kicker">KAPITOLA</span><h1 id="5-n-stroje-kter-b-hem-setk-n-zazn-ly">5. Nástroje, které během setkání zazněly</h1>
+<p>Tato část není doporučením konkrétního produktu. Má pomoci pochopit, na jaký typ práce se různé nástroje mohou hodit. Funkce se rychle mění.</p>
+<section class="level2" id="chatgpt-nebo-jiný-obecný-ai-chat">
+<h2 id="chatgpt-nebo-jin-obecn-ai-chat">ChatGPT nebo jiný obecný AI chat</h2>
+<p>Hodí se pro:</p>
+<ul>
+<li>brainstorming,</li>
+<li>vysvětlování,</li>
+<li>práci s textem,</li>
+<li>analýzu problému,</li>
+<li>práci s nahranými soubory,</li>
+<li>přípravu výstupů,</li>
+<li>hledání a zpřesňování pracovního postupu.</li>
+</ul>
+<p>Pro začátečníka je důležitější naučit se dobře pracovat s jedním prostředím než přeskakovat mezi deseti nástroji.</p>
+</section>
+<section class="level2" id="microsoft-copilot">
+<h2 id="microsoft-copilot">Microsoft Copilot</h2>
+<p>Ve setkání byl zmiňován zejména v souvislosti s pracovním prostředím Microsoft 365.</p>
+<p>Může být užitečný tam, kde má organizace nastavený přístup k:</p>
+<ul>
+<li>e-mailům,</li>
+<li>kalendářům,</li>
+<li>dokumentům,</li>
+<li>SharePointu,</li>
+<li>Teams,</li>
+<li>tabulkám.</li>
+</ul>
+<p>Hlavní výhoda je kontext pracovního prostředí, pokud ho organizace povoluje a správně nastaví.</p>
+</section>
+<section class="level2" id="notebooklm">
+<h2 id="notebooklm">NotebookLM</h2>
+<p>Ve společné diskusi zazněl jako užitečný nástroj pro práci nad konkrétní sadou zdrojů.</p>
+<p>Příklady:</p>
+<ul>
+<li>nová legislativa,</li>
+<li>několik dlouhých PDF,</li>
+<li>studijní podklady,</li>
+<li>příprava na výběrové řízení,</li>
+<li>práce s videi a jejich obsahem,</li>
+<li>příprava audio přehledu,</li>
+<li>kvíz nebo studijní materiál.</li>
+</ul>
+<p>Výhoda podobného prostředí je, že můžete držet zdroje pohromadě a ptát se nad nimi.</p>
+</section>
+<section class="level2" id="notion-nebo-jiný-znalostní-systém">
+<h2 id="notion-nebo-jin-znalostn-syst-m">Notion nebo jiný znalostní systém</h2>
+<p>Ve setkání sloužil jako místo pro:</p>
+<ul>
+<li>ukládání znalostí,</li>
+<li>databáze,</li>
+<li>třídění informací,</li>
+<li>propojování témat,</li>
+<li>AI Knowledge Radar.</li>
+</ul>
+<p>Není nutné používat Notion. Důležitý je princip: mít důležité znalosti někde, kde se k nim můžete znovu vrátit.</p>
+</section>
+<section class="level2" id="výzkumné-a-vyhledávací-nástroje">
+<h2 id="v-zkumn-a-vyhled-vac-n-stroje">Výzkumné a vyhledávací nástroje</h2>
+<p>Ve setkání zazněl například Perplexity a hlubší rešerše v AI nástrojích.</p>
+<p>Hodí se, když potřebujete:</p>
+<ul>
+<li>najít více zdrojů,</li>
+<li>porovnat přístupy,</li>
+<li>zmapovat téma,</li>
+<li>zjistit, kde se určitý pojem objevuje,</li>
+<li>připravit podklady pro další analýzu.</li>
+</ul>
+<p>U důležitých témat vždy ověřujte původní zdroje.</p>
+</section>
+<section class="level2" id="kódovací-režimy-a-nástroje">
+<h2 id="k-dovac-re-imy-a-n-stroje">Kódovací režimy a nástroje</h2>
+<p>Byly ukázány jako způsob, jak z textových podkladů vytvořit například:</p>
+<ul>
+<li>HTML stránku,</li>
+<li>dashboard,</li>
+<li>jednoduchou interaktivní aplikaci,</li>
+<li>vizualizaci informací,</li>
+<li>prezentaci.</li>
+</ul>
+<p>Začátečník nemusí umět programovat. Potřebuje ale umět popsat, co chce vytvořit, a následně výsledek zkontrolovat.</p>
+<hr/>
+</section>
+</section>
+<section class="level1" id="6-bezpečnost-kontrola-a-odpovědnost">
+<span class="chapter-kicker">KAPITOLA</span><h1 id="6-bezpe-nost-kontrola-a-odpov-dnost">6. Bezpečnost, kontrola a odpovědnost</h1>
+<p>Tato část je důležitá zejména pro práci ve veřejné správě, školství, univerzitách a dalších organizacích.</p>
+<section class="level2" id="tři-otázky-může-smí-má">
+<h2 id="t-i-ot-zky-m-e-sm-m">Tři otázky: MŮŽE, SMÍ, MÁ</h2>
+<p>Než AI předáte úkol nebo data, ptejte se:</p>
+<section class="level3" id="může-1">
+<h3>MŮŽE?</h3>
+<p>Je AI pro tento typ úkolu technicky schopná?</p>
+</section>
+<section class="level3" id="smí-1">
+<h3>SMÍ?</h3>
+<p>Mohu do tohoto konkrétního nástroje vložit tato data? Mám povolení organizace? Neobsahují podklady osobní, citlivé, důvěrné nebo jinak chráněné informace?</p>
+</section>
+<section class="level3" id="má-1">
+<h3>MÁ?</h3>
+<p>Je vhodné, aby tuto část práce dělala AI, nebo tím ztrácím důležitý lidský úsudek, učení, kontakt s lidmi nebo odpovědnost?</p>
+</section>
+</section>
+<section class="level2" id="praktická-pravidla">
+<h2 id="praktick-pravidla">Praktická pravidla</h2>
+<ul>
+<li>Nevkládejte citlivá nebo důvěrná data jen proto, že je to technicky možné.</li>
+<li>U pracovních dat se řiďte pravidly zaměstnavatele a používejte schválené prostředí.</li>
+<li>Placený účet sám o sobě není univerzální povolení pro jakákoli data. Podmínky se liší podle služby, tarifu a nastavení organizace.</li>
+<li>U osobních údajů, zdravotních údajů, finančních údajů a údajů o dětech buďte zvlášť opatrní.</li>
+<li>Kde je to možné, data anonymizujte nebo minimalizujte.</li>
+<li>Pokud AI připravuje rozhodnutí, dokument nebo doporučení s dopadem na jiné lidi, zachovejte lidskou kontrolu.</li>
+<li>Pokud podklad chybí, je lepší, aby AI řekla „nevím“ nebo požádala o doplnění, než aby údaj domyslela.</li>
+</ul>
+</section>
+<section class="level2" id="ověřování">
+<h2 id="ov-ov-n">Ověřování</h2>
+<p>Ptejte se AI:</p>
+<ul>
+<li>„Které části tohoto výstupu jsou nejisté?“</li>
+<li>„Co je přímo doložené v podkladech a co je tvoje interpretace?“</li>
+<li>„U každého důležitého tvrzení mi ukaž, z jakého zdroje vychází.“</li>
+<li>„Co bych měla před použitím ještě ověřit člověkem?“</li>
+</ul>
+<hr/>
+</section>
+</section>
+<section class="level1" id="7-co-můžete-zkusit-podle-své-situace">
+<span class="chapter-kicker">KAPITOLA</span><h1 id="7-co-m-ete-zkusit-podle-sv-situace">7. Co můžete zkusit podle své situace</h1>
+<p>Nemusíte hledat stejný use case, jaký byl v prezentaci. Hledejte vlastní problém.</p>
+<section class="level2" id="pokud-pracujete-v-administrativě-nebo-projektech">
+<h2 id="pokud-pracujete-v-administrativ-nebo-projektech">Pokud pracujete v administrativě nebo projektech</h2>
+<p>Zkuste například:</p>
+<ul>
+<li>nahrát projektovou výzvu a nechat si vytáhnout termíny, podmínky a nejasnosti,</li>
+<li>porovnat výzvu s vaším projektovým záměrem,</li>
+<li>připravit checklist povinných kroků,</li>
+<li>zpracovat přepis schůzky do zápisu, úkolů a rozhodnutí,</li>
+<li>porovnat dvě verze dokumentu,</li>
+<li>vytvořit návrh e-mailu pro partnery s jasným cílem,</li>
+<li>z opakovaného postupu vytvořit šablonu nebo skill,</li>
+<li>připravit přehled rizik projektu a otázky, které ještě potřebujete vyřešit.</li>
+</ul>
+<section class="level3" id="startovací-prompt">
+<h3>Startovací prompt</h3>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Pracuji na projektu [stručně popiš]. Tady jsou moje podklady. Nejdřív mi řekni, co z nich chápeš, co ti chybí a na co se mě potřebuješ zeptat. Potom navrhni nejefektivnější další postup. Nevymýšlej si chybějící údaje.“</p>
+</blockquote>
+</section>
+</section>
+<section class="level2" id="pokud-pracujete-ve-státní-správě-nebo-s-legislativou">
+<h2 id="pokud-pracujete-ve-st-tn-spr-v-nebo-s-legislativou">Pokud pracujete ve státní správě nebo s legislativou</h2>
+<p>Zkuste například:</p>
+<ul>
+<li>vložit oficiální zdroje a nechat si vysvětlit jejich strukturu,</li>
+<li>vytvořit přehled změn a povinností,</li>
+<li>nechat AI připravit otázky k nejasným částem,</li>
+<li>vytvořit FAQ pro kolegy pouze z dodaných podkladů,</li>
+<li>vytvořit krátké shrnutí a následně si nechat jednotlivé body vysvětlit,</li>
+<li>porovnat několik oficiálních dokumentů.</li>
+</ul>
+<section class="level3" id="startovací-prompt-1">
+<h3>Startovací prompt</h3>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Pracuj pouze s přiloženými oficiálními zdroji. Připrav přehled hlavních povinností, termínů a změn. U každého bodu uveď, kde v podkladech se nachází. Pokud něco nelze z podkladů spolehlivě určit, výslovně to napiš.“</p>
+</blockquote>
+</section>
+</section>
+<section class="level2" id="pokud-učíte-nebo-pracujete-ve-školce-či-škole">
+<h2 id="pokud-u-te-nebo-pracujete-ve-kolce-i-kole">Pokud učíte nebo pracujete ve školce či škole</h2>
+<p>Zkuste například:</p>
+<ul>
+<li>navrhnout aktivitu podle věku, času, počtu dětí a cíle,</li>
+<li>vytvořit několik variant pro různě schopnou skupinu,</li>
+<li>připravit podklady pro rodiče,</li>
+<li>zhodnotit vlastní plán aktivity a najít slabá místa,</li>
+<li>vytvořit pracovní list nebo kartičky,</li>
+<li>promyslet, co má zůstat lidské a co může převzít AI.</li>
+</ul>
+<section class="level3" id="startovací-prompt-2">
+<h3>Startovací prompt</h3>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Připravuji aktivitu pro děti ve věku [x]. Cíl je [cíl]. Mám [čas], [počet dětí] a tato omezení: [omezení]. Nejdřív se mě doptej na chybějící informace a potom navrhni tři varianty aktivity. U každé vysvětli, co se děti skutečně naučí.“</p>
+</blockquote>
+<p>Poznámka: do veřejných AI nástrojů nevkládejte identifikující nebo citlivé údaje o dětech.</p>
+</section>
+</section>
+<section class="level2" id="pokud-se-vracíte-do-práce-nebo-hledáte-novou-práci">
+<h2 id="pokud-se-vrac-te-do-pr-ce-nebo-hled-te-novou-pr-ci">Pokud se vracíte do práce nebo hledáte novou práci</h2>
+<p>Zkuste například:</p>
+<ul>
+<li>porovnat svůj životopis s konkrétním pracovním inzerátem,</li>
+<li>zjistit, které zkušenosti neumíte dobře pojmenovat,</li>
+<li>nacvičit pohovor,</li>
+<li>nechat AI hrát náročného tazatele,</li>
+<li>vytvořit studijní plán k nové oblasti,</li>
+<li>z podkladů vytvořit audio přehled pro učení,</li>
+<li>navrhnout malý praktický projekt, kterým můžete ukázat své schopnosti.</li>
+</ul>
+<section class="level3" id="startovací-prompt-3">
+<h3>Startovací prompt</h3>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Tady je pracovní inzerát a tady je můj životopis. Nechci, abys mi životopis jen přepsal. Nejdřív analyzuj, co zaměstnavatel skutečně hledá, co už pro to mám, kde mám mezery a jaké konkrétní důkazy nebo malé projekty bych mohla vytvořit, abych svou schopnost ukázala.“</p>
+</blockquote>
+</section>
+</section>
+<section class="level2" id="pokud-chcete-začít-v-osobním-životě">
+<h2 id="pokud-chcete-za-t-v-osobn-m-ivot">Pokud chcete začít v osobním životě</h2>
+<p>Zkuste něco, kde dobře poznáte, jestli výsledek dává smysl:</p>
+<ul>
+<li>plán cesty,</li>
+<li>porovnání variant,</li>
+<li>organizace rodinné akce,</li>
+<li>studijní plán,</li>
+<li>zpracování vlastních poznámek,</li>
+<li>příprava seznamu otázek před důležitou schůzkou.</li>
+</ul>
+<p>Osobní úkol je často dobré bezpečné prostředí pro první experimenty.</p>
+<hr/>
+</section>
+</section>
+<section class="level1" id="8-sedmidenní-start-pro-začátečníka">
+<span class="chapter-kicker">KAPITOLA</span><h1 id="8-sedmidenn-start-pro-za-te-n-ka">8. Sedmidenní start pro začátečníka</h1>
+<p>Tento plán vychází z principů setkání. Cílem není „naučit se AI“. Cílem je vytvořit si první pracovní návyk.</p>
+<section class="level2" id="den-1-jedna-skutečná-otázka">
+<h2 id="den-1-jedna-skute-n-ot-zka">Den 1: Jedna skutečná otázka</h2>
+<p>Vyberte úkol, který opravdu potřebujete vyřešit.</p>
+<p>Napište:</p>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Potřebuji dosáhnout [cíl]. Moje situace je [situace]. Pomoz mi promyslet, jak bych měla postupovat.“</p>
+</blockquote>
+</section>
+<section class="level2" id="den-2-přidejte-kontext">
+<h2 id="den-2-p-idejte-kontext">Den 2: Přidejte kontext</h2>
+<p>Vezměte stejný nebo podobný úkol a přidejte:</p>
+<ul>
+<li>dokument,</li>
+<li>screenshot,</li>
+<li>tabulku,</li>
+<li>e-mail,</li>
+<li>několik vlastních omezení.</li>
+</ul>
+<p>Sledujte, jak se výsledek změní.</p>
+</section>
+<section class="level2" id="den-3-nechte-ai-klást-otázky">
+<h2 id="den-3-nechte-ai-kl-st-ot-zky">Den 3: Nechte AI klást otázky</h2>
+<p>Napište:</p>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Než navrhneš řešení, polož mi otázky, které potřebuješ zodpovědět.“</p>
+</blockquote>
+<p>Tím se učíte, jaký kontext je pro úkol důležitý.</p>
+</section>
+<section class="level2" id="den-4-chtějte-artefakt">
+<h2 id="den-4-cht-jte-artefakt">Den 4: Chtějte artefakt</h2>
+<p>Místo další odpovědi chtějte:</p>
+<ul>
+<li>checklist,</li>
+<li>tabulku,</li>
+<li>osnovu,</li>
+<li>přehled rizik,</li>
+<li>pracovní postup,</li>
+<li>šablonu.</li>
+</ul>
+</section>
+<section class="level2" id="den-5-vraťte-ai-zpětnou-vazbu">
+<h2 id="den-5-vra-te-ai-zp-tnou-vazbu">Den 5: Vraťte AI zpětnou vazbu</h2>
+<p>Řekněte, co je dobré a co ne.</p>
+<p>Nechte AI návrh přepracovat.</p>
+</section>
+<section class="level2" id="den-6-uložte-povedený-postup">
+<h2 id="den-6-ulo-te-poveden-postup">Den 6: Uložte povedený postup</h2>
+<p>Pokud jste něco podobného dělali už vícekrát, napište:</p>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Analyzuj náš postup a vytvoř z něj opakovatelnou instrukci pro příště.“</p>
+</blockquote>
+</section>
+<section class="level2" id="den-7-rozhodněte-co-má-zůstat-na-vás">
+<h2 id="den-7-rozhodn-te-co-m-z-stat-na-v-s">Den 7: Rozhodněte, co má zůstat na vás</h2>
+<p>Položte si:</p>
+<ul>
+<li>Co mi AI opravdu pomohla zlepšit?</li>
+<li>Co jen zrychlila?</li>
+<li>Kde jsem musela výstup zásadně opravit?</li>
+<li>Co bych AI příště nepředala?</li>
+<li>Který postup chci zopakovat?</li>
+</ul>
+<hr/>
+</section>
+</section>
+<section class="level1" id="9-malá-sada-promptů-které-můžete-opravdu-používat">
+<span class="chapter-kicker">KAPITOLA</span><h1 id="9-mal-sada-prompt-kter-m-ete-opravdu-pou-vat">9. Malá sada promptů, které můžete opravdu používat</h1>
+<p>Nejde o kouzelné formule. Jsou to startovací věty, které pomáhají nastavit dobrý způsob spolupráce.</p>
+<section class="level2" id="když-nevíte-jak-začít">
+<h2 id="kdy-nev-te-jak-za-t">Když nevíte, jak začít</h2>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Mám tento problém: [popis]. Cíl je [cíl]. Tady jsou moje podklady: [podklady]. Nejdřív se mě doptej na informace, které ti chybí. Potom navrhni postup.“</p>
+</blockquote>
+</section>
+<section class="level2" id="když-je-odpověď-příliš-obecná">
+<h2 id="kdy-je-odpov-p-li-obecn">Když je odpověď příliš obecná</h2>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Tahle odpověď je pro mě příliš obecná. Řekni mi, jaký kontext ode mě potřebuješ, aby byla konkrétní pro moji situaci.“</p>
+</blockquote>
+</section>
+<section class="level2" id="když-chcete-pracovat-jen-s-podklady">
+<h2 id="kdy-chcete-pracovat-jen-s-podklady">Když chcete pracovat jen s podklady</h2>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Pracuj pouze s přiloženými podklady. Jasně odděl, co je přímo doložené, co je interpretace a co v podkladech chybí. Nic si nevymýšlej.“</p>
+</blockquote>
+</section>
+<section class="level2" id="když-chcete-kritickou-zpětnou-vazbu">
+<h2 id="kdy-chcete-kritickou-zp-tnou-vazbu">Když chcete kritickou zpětnou vazbu</h2>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Nechci pochvalu ani podbízivou odpověď. Chci věcnou a kritickou zpětnou vazbu, která mi pomůže výsledek zlepšit. Ukaž slabá místa, rizika a co bych měla přepracovat.“</p>
+</blockquote>
+</section>
+<section class="level2" id="když-chcete-uložit-postup">
+<h2 id="kdy-chcete-ulo-it-postup">Když chcete uložit postup</h2>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Tento úkol budeme dělat opakovaně. Zrekapituluj, jak jsme postupovali. Vytvoř opakovatelný návod se vstupy, kroky, kontrolami, situacemi, kdy se máš doptat, a přesným formátem výstupu.“</p>
+</blockquote>
+</section>
+<section class="level2" id="když-chcete-zlepšit-systém-ne-jen-jeden-výstup">
+<h2 id="kdy-chcete-zlep-it-syst-m-ne-jen-jeden-v-stup">Když chcete zlepšit systém, ne jen jeden výstup</h2>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Tady se stala chyba: [chyba]. Neopravuj jen tento jeden výstup. Navrhni, co máme změnit v instrukci nebo postupu, aby se stejná chyba příště neopakovala.“</p>
+</blockquote>
+</section>
+<section class="level2" id="když-chcete-používat-ai-jako-kouče">
+<h2 id="kdy-chcete-pou-vat-ai-jako-kou-e">Když chcete používat AI jako kouče</h2>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Neřeš úkol za mě. Pomoz mi se na něm učit. Ptej se, upozorňuj na chyby a dávej zpětnou vazbu, ale klíčovou část práce nech nejdřív udělat mě.“</p>
+</blockquote>
+<hr/>
+</section>
+</section>
+<section class="level1" id="10-otázky-a-odpovědi-které-zazněly-na-konci-setkání">
+<span class="chapter-kicker">KAPITOLA</span><h1 id="10-ot-zky-a-odpov-di-kter-zazn-ly-na-konci-setk-n">10. Otázky a odpovědi, které zazněly na konci setkání</h1>
+<section class="level2" id="musím-si-hned-něco-instalovat">
+<h2 id="mus-m-si-hned-n-co-instalovat">Musím si hned něco instalovat?</h2>
+<p>Ne. Pro začátek stačí jedno AI prostředí, které můžete používat ve webovém prohlížeči. Kódovací nebo desktopové režimy mají smysl až ve chvíli, kdy chcete vytvářet složitější artefakty nebo pracovat se soubory jiným způsobem.</p>
+<p>Nejdůležitější je nezačínat výběrem deseti nástrojů, ale skutečným úkolem.</p>
+</section>
+<section class="level2" id="co-použít-na-dlouhé-dokumenty-nebo-legislativu">
+<h2 id="co-pou-t-na-dlouh-dokumenty-nebo-legislativu">Co použít na dlouhé dokumenty nebo legislativu?</h2>
+<p>Ve setkání zazněl NotebookLM jako vhodný příklad prostředí, kde můžete nahrát vlastní zdroje, ptát se nad nimi a vytvořit z nich přehled, studijní materiál, kvíz nebo audio shrnutí.</p>
+<p>Důležitý princip je práce nad konkrétní sadou zdrojů a možnost vracet se k tomu, odkud informace pochází.</p>
+</section>
+<section class="level2" id="jak-nahrát-offline-schůzku">
+<h2 id="jak-nahr-t-offline-sch-zku">Jak nahrát offline schůzku?</h2>
+<p>Potřebujete kvalitní zvukový záznam. U offline schůzky může stačit diktafon nebo vhodný mikrofon. U hybridní schůzky je důležité otestovat, zda jsou srozumitelně slyšet lidé v místnosti i online.</p>
+</section>
+<section class="level2" id="jak-vytvořit-vlastní-skill-nebo-opakovatelný-postup">
+<h2 id="jak-vytvo-it-vlastn-skill-nebo-opakovateln-postup">Jak vytvořit vlastní skill nebo opakovatelný postup?</h2>
+<p>Nemusíte znát technickou syntaxi.</p>
+<p>Začněte přirozeně:</p>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Teď jsme úspěšně dokončili tento úkol. Dělám ho opakovaně. Analyzuj postup a navrhni z něj skill nebo opakovatelnou instrukci. Řekni mi, jaké informace ode mě ještě potřebuješ a jak ho mám uložit a testovat.“</p>
+</blockquote>
+<p>Pak výsledek otestujte na dalším reálném příkladu a opravujte pravidla podle chyb.</p>
+</section>
+<section class="level2" id="jak-ai-říct-aby-nebyla-podbízivá">
+<h2 id="jak-ai-ct-aby-nebyla-podb-ziv">Jak AI říct, aby nebyla podbízivá?</h2>
+<p>Řekněte to přímo.</p>
+<p>Například:</p>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Mluv se mnou věcně a na rovinu. Nepotřebuji pochvalu. Pokud je můj nápad slabý, řekni mi proč. Navrhni, jak ho zlepšit.“</p>
+</blockquote>
+<p>Stejně můžete zadat styl:</p>
+<ul>
+<li>stručný,</li>
+<li>akademický,</li>
+<li>neformální,</li>
+<li>manažerský,</li>
+<li>srozumitelný pro začátečníka.</li>
+</ul>
+<p>Pokud chcete, aby AI psala více vaším stylem, dejte jí několik kvalitních vlastních textů a nechte ji nejdřív analyzovat charakteristické rysy.</p>
+</section>
+<section class="level2" id="jak-začít-když-vůbec-nevím-na-co-ai-použít">
+<h2 id="jak-za-t-kdy-v-bec-nev-m-na-co-ai-pou-t">Jak začít, když vůbec nevím, na co AI použít?</h2>
+<p>Položte AI otázku o vlastní práci:</p>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Popíšu ti, co dělám během běžného týdne. Ptej se mě na jednotlivé činnosti a pomoz mi najít tři místa, kde by mi AI mohla zlepšit kvalitu práce, snížit rutinu nebo pomoci s rozhodováním. Nezačínej seznamem nástrojů.“</p>
+</blockquote>
+</section>
+<section class="level2" id="musí-ai-vždy-šetřit-čas">
+<h2 id="mus-ai-v-dy-et-it-as">Musí AI vždy šetřit čas?</h2>
+<p>Ne. To bylo během setkání zdůrazněno několikrát.</p>
+<p>U rutiny může být cílem rychlost. U strategie, psaní, učení nebo tvorby může být cílem kvalitnější myšlení a výsledek. Tam může spolupráce s AI klidně trvat déle.</p>
+<hr/>
+</section>
+</section>
+<section class="level1" id="11-slovníček-pro-začátečníky">
+<span class="chapter-kicker">KAPITOLA</span><h1 id="11-slovn-ek-pro-za-te-n-ky">11. Slovníček pro začátečníky</h1>
+<section class="level2" id="prompt">
+<h2 id="prompt">Prompt</h2>
+<p>To, co AI zadáte. Může to být otázka, instrukce, problém, role, požadavek na výstup nebo kombinace všeho.</p>
+</section>
+<section class="level2" id="kontext">
+<h2 id="kontext">Kontext</h2>
+<p>Informace, které AI potřebuje, aby rozuměla vaší situaci. Může to být text, soubor, screenshot, historie projektu, cíl, omezení nebo vaše preference.</p>
+</section>
+<section class="level2" id="model">
+<h2 id="model">Model</h2>
+<p>„Motor“ AI, který zpracovává zadání. Různé modely se mohou lišit rychlostí, schopností uvažovat, pracovat se soubory nebo řešit náročné úkoly.</p>
+</section>
+<section class="level2" id="multimodální-vstup">
+<h2 id="multimod-ln-vstup">Multimodální vstup</h2>
+<p>Situace, kdy AI nedostane jen text, ale také obrázek, screenshot, dokument, tabulku, audio nebo jiný typ podkladu.</p>
+</section>
+<section class="level2" id="artefakt-nebo-výstup">
+<h2 id="artefakt-nebo-v-stup">Artefakt nebo výstup</h2>
+<p>Konkrétní použitelná věc, která vznikne, například tabulka, prezentace, checklist, dokument, dashboard nebo aplikace.</p>
+</section>
+<section class="level2" id="workflow">
+<h2 id="workflow">Workflow</h2>
+<p>Pracovní postup složený z více kroků. Například příprava schůzky, záznam, přepis, zápis, úkoly a další práce.</p>
+</section>
+<section class="level2" id="skill">
+<h2 id="skill">Skill</h2>
+<p>V tomto materiálu znamená <strong>uložený způsob práce</strong>, který lze znovu použít. Obsahuje pravidla, kroky, kontroly a formát výstupu. Konkrétní technické provedení se mezi nástroji liší.</p>
+</section>
+<section class="level2" id="agent">
+<h2 id="agent">Agent</h2>
+<p>Specializovaná AI role určená pro určitý typ práce. Může mít vlastní instrukce, nástroje a přístup k určitým podkladům. Ve setkání byl pojem používán široce jako role v rámci většího pracovního systému.</p>
+</section>
+<section class="level2" id="automatizace">
+<h2 id="automatizace">Automatizace</h2>
+<p>Práce, která se spustí podle času nebo události, bez nutnosti ručně zadávat stejný příkaz pokaždé.</p>
+</section>
+<section class="level2" id="druhý-mozek">
+<h2 id="druh-mozek">Druhý mozek</h2>
+<p>Vlastní systém uložených znalostí, poznámek, zdrojů a souvislostí, ke kterému se může člověk i AI vracet.</p>
+</section>
+<section class="level2" id="markdown">
+<h2 id="markdown">Markdown</h2>
+<p>Jednoduchý textový formát se značkami pro nadpisy, odrážky a strukturu. Je dobře čitelný pro člověka i AI a hodí se jako přenositelný kontext pro další práci.</p>
+</section>
+<section class="level2" id="deep-research-nebo-hlubší-rešerše">
+<h2 id="deep-research-nebo-hlub-re-er-e">Deep Research nebo hlubší rešerše</h2>
+<p>Režim, ve kterém AI neodpoví jen z jednoho rychlého kroku, ale dohledává a porovnává více zdrojů a připravuje strukturovanější výzkumný výstup. Konkrétní funkce se liší podle nástroje.</p>
+</section>
+<section class="level2" id="halucinace">
+<h2 id="halucinace">Halucinace</h2>
+<p>Situace, kdy AI vytvoří informaci, která zní přesvědčivě, ale není správná nebo není doložená. Proto je důležité ověřování a jasné pokyny, aby AI přiznala chybějící údaje.</p>
+<hr/>
+</section>
+</section>
+<section class="level1" id="12-co-zatím-nemusíte-řešit">
+<span class="chapter-kicker">KAPITOLA</span><h1 id="12-co-zat-m-nemus-te-e-it">12. Co zatím nemusíte řešit</h1>
+<p>Pokud začínáte, nemusíte:</p>
+<ul>
+<li>znát všechny AI nástroje,</li>
+<li>sledovat každý nový model,</li>
+<li>vytvářet agenty,</li>
+<li>programovat,</li>
+<li>stavět automatizace,</li>
+<li>mít druhý mozek,</li>
+<li>mít perfektní prompty,</li>
+<li>předávat AI celý pracovní proces.</li>
+</ul>
+<p>Stačí zvládnout tři věci:</p>
+<ol type="1">
+<li><strong>popsat cíl,</strong></li>
+<li><strong>dodat relevantní kontext,</strong></li>
+<li><strong>pracovat s odpovědí dál a ověřovat ji.</strong></li>
+</ol>
+<p>Až tohle začne být přirozené, další vrstvy začnou dávat mnohem větší smysl.</p>
+<hr/>
+</section>
+<section class="level1" id="13-jak-pokračovat-po-setkání">
+<span class="chapter-kicker">KAPITOLA</span><h1 id="13-jak-pokra-ovat-po-setk-n">13. Jak pokračovat po setkání</h1>
+<section class="level2" id="nejdůležitější-otázka">
+<h2 id="nejd-le-it-j-ot-zka">Nejdůležitější otázka</h2>
+<p>Až budete příště něco řešit, zkuste se zastavit a zeptat:</p>
+<blockquote class="callout">
+<p><strong>„Jak by se tenhle úkol dal s AI udělat jinak?“</strong></p>
+</blockquote>
+<p>Ne „jaký nástroj mám použít“.</p>
+<p>Ne „jaký je nejlepší prompt“.</p>
+<p>Ale:</p>
+<ul>
+<li>Co je vlastně problém?</li>
+<li>Co je cílem?</li>
+<li>Jaký kontext už mám?</li>
+<li>Co může AI připravit?</li>
+<li>Co musím rozhodnout já?</li>
+<li>Opakuje se tento úkol?</li>
+<li>Dá se z něj vytvořit lepší pracovní postup?</li>
+</ul>
+</section>
+<section class="level2" id="jeden-jednoduchý-závazek">
+<h2 id="jeden-jednoduch-z-vazek">Jeden jednoduchý závazek</h2>
+<p>Vyberte si <strong>jeden úkol během příštího týdne</strong> a zkuste ho s AI udělat jinak než obvykle.</p>
+<p>To je lepší začátek než seznam padesáti nástrojů.</p>
+<hr/>
+</section>
+</section>
+<section class="level1" id="14-jak-pracovat-s-markdown-verzí-tohoto-zápisu-v-ai">
+<span class="chapter-kicker">KAPITOLA</span><h1 id="14-jak-pracovat-s-markdown-verz-tohoto-z-pisu-v-ai">14. Jak pracovat s Markdown verzí tohoto zápisu v AI</h1>
+<p>Markdown verze je připravená jako kontext pro další konverzaci s AI.</p>
+<p>Nahrajte soubor do nástroje, který používáte, a zkuste například některou z následujících otázek.</p>
+<section class="level2" id="najdi-moje-první-use-cases">
+<h2 id="najdi-moje-prvn-use-cases">Najdi moje první use cases</h2>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Tento dokument shrnuje setkání o práci s AI. Jsem [popiš svou roli]. Ptej se mě postupně na moji běžnou práci a potom mi navrhni tři konkrétní use cases. Nechci obecné tipy ani seznam nástrojů. Chci problémy z mé skutečné práce, které můžeme společně přepracovat.“</p>
+</blockquote>
+</section>
+<section class="level2" id="navrhni-mi-jeden-experiment-na-20-minut">
+<h2 id="navrhni-mi-jeden-experiment-na-20-minut">Navrhni mi jeden experiment na 20 minut</h2>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Na základě principů v tomto dokumentu mi navrhni jeden bezpečný experiment s AI, který zvládnu do 20 minut a který se týká mé práce. Nejdřív se mě zeptej, co právě řeším.“</p>
+</blockquote>
+</section>
+<section class="level2" id="pomoz-mi-vytvořit-opakovatelný-postup">
+<h2 id="pomoz-mi-vytvo-it-opakovateln-postup">Pomoz mi vytvořit opakovatelný postup</h2>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Mám úkol, který dělám opakovaně: [popis]. Použij principy ze zápisu a pomoz mi z něj vytvořit workflow. Nejdřív zmapuj současný postup, pak ukaž, kde může pomoci AI, kde musí zůstat člověk a co by se dalo uložit pro příště.“</p>
+</blockquote>
+</section>
+<section class="level2" id="vysvětli-mi-něco-znovu-jednodušeji">
+<h2 id="vysv-tli-mi-n-co-znovu-jednodu-eji">Vysvětli mi něco znovu jednodušeji</h2>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Vysvětli mi na mém vlastním příkladu rozdíl mezi promptem, workflow, skillem, automatizací a agentem. Použij terminologii z tohoto dokumentu a ptej se, pokud ti chybí můj kontext.“</p>
+</blockquote>
+</section>
+<section class="level2" id="procvičuj-mě">
+<h2 id="procvi-uj-m">Procvičuj mě</h2>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Polož mi postupně deset praktických otázek k principům z tohoto dokumentu. Po každé odpovědi mi dej krátkou zpětnou vazbu a další otázku. Nechci test definic, chci aplikaci na reálnou práci.“</p>
+</blockquote>
+</section>
+<section class="level2" id="zkontroluj-bezpečnost-mého-use-case">
+<h2 id="zkontroluj-bezpe-nost-m-ho-use-case">Zkontroluj bezpečnost mého use case</h2>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p>„Chci AI použít na tento úkol: [popis]. Projdi se mnou otázky MŮŽE, SMÍ, MÁ. Upozorni mě na data, oprávnění, kontrolní body a části, které bych neměla automatizovat bez lidského ověření.“</p>
+</blockquote>
+<hr/>
+</section>
+</section>
+<section class="level1" id="15-jedna-věta-na-závěr">
+<span class="chapter-kicker">KAPITOLA</span><h1 id="15-jedna-v-ta-na-z-v-r">15. Jedna věta na závěr</h1>
+<blockquote class="callout"><button aria-label="Kopírovat text" class="copy-btn" type="button">Kopírovat</button>
+<p><strong>Pokročilost není v tom, kolik práce předám AI. Je v tom, že umím dobře rozhodnout, co má dělat AI a co mám dělat já.</strong></p>
+</blockquote>
+<p>A proto:</p>
+<blockquote class="callout">
+<p><strong>Delegujte práci. Ne odpovědnost.</strong></p>
+</blockquote>
+</section>
+
+  </main>
+</div>
+<footer class="footer"><div class="footer-box"><span>AI už není jen chatbot · praktický průvodce po setkání</span><span>Člověk drží cíl, úsudek, kontrolu a odpovědnost.</span></div></footer>
+<a class="backtop" id="backtop" href="#top" aria-label="Nahoru">↑</a>
+<script>
+const progress=document.getElementById('progress');const backtop=document.getElementById('backtop');
+function updateScroll(){const h=document.documentElement;const max=h.scrollHeight-h.clientHeight;const pct=max>0?(h.scrollTop/max)*100:0;progress.style.width=pct+'%';backtop.classList.toggle('show',h.scrollTop>700)}
+document.addEventListener('scroll',updateScroll,{passive:true});updateScroll();
+document.querySelectorAll('.copy-btn').forEach(btn=>{btn.addEventListener('click',async()=>{const box=btn.closest('blockquote');const clone=box.cloneNode(true);const b=clone.querySelector('.copy-btn');if(b)b.remove();const txt=clone.innerText.trim();try{await navigator.clipboard.writeText(txt);btn.textContent='Zkopírováno';btn.classList.add('copied');setTimeout(()=>{btn.textContent='Kopírovat';btn.classList.remove('copied')},1300)}catch(e){btn.textContent='Označte text'}})});
+const links=[...document.querySelectorAll('#toc a')];const targets=links.map(a=>document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id))}})},{rootMargin:'-18% 0px -72% 0px',threshold:0});targets.forEach(t=>obs.observe(t));
+const toggle=document.getElementById('tocToggle');toggle?.addEventListener('click',()=>{const existing=document.getElementById('mobileTocPanel');if(existing){existing.remove();return;}const panel=document.createElement('div');panel.id='mobileTocPanel';panel.className='toc';panel.style.position='fixed';panel.style.left='18px';panel.style.right='18px';panel.style.top='62px';panel.style.maxHeight='72vh';panel.style.zIndex='90';panel.innerHTML=document.getElementById('toc').innerHTML;document.body.appendChild(panel);panel.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>panel.remove()));});
+</script>
+</body></html>
